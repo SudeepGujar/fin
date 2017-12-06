@@ -14,13 +14,11 @@ import java.util.stream.Collectors;
 public class MainService {
 
     private final CashReceiptService cashReceiptService;
-    private final InvoiceAndCreditsService invoiceAndCreditsService;
     private final SaleForceReportService saleForceReportService;
 
     @Autowired
-    public MainService(CashReceiptService cashReceiptService, InvoiceAndCreditsService invoiceAndCreditsService, SaleForceReportService saleForceReportService) {
+    public MainService(CashReceiptService cashReceiptService,  SaleForceReportService saleForceReportService) {
         this.cashReceiptService = cashReceiptService;
-        this.invoiceAndCreditsService = invoiceAndCreditsService;
         this.saleForceReportService = saleForceReportService;
     }
 

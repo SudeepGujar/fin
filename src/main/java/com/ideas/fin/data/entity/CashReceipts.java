@@ -45,4 +45,48 @@ public class CashReceipts {
     public CashReceipts(String customerNumber, String customerName, String documentNumber, String documentType, Date documentDate, String currencyID, Double trxAmount, Double originatingTrxAmount, String filename, Date uploadDate) {
         this(null, customerNumber, customerName, documentNumber, documentType, documentDate, currencyID, trxAmount, originatingTrxAmount, filename, uploadDate);
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getCustomerNumber() {
+        return customerNumber;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public String getDocumentNumber() {
+        return documentNumber;
+    }
+
+    public String getDocumentType() {
+        return documentType;
+    }
+
+    public Date getDocumentDate() {
+        return documentDate;
+    }
+
+    public String getCurrencyID() {
+        return currencyID;
+    }
+
+    public Double getTrxAmount() {
+        return trxAmount;
+    }
+
+    public Double getOriginatingTrxAmount() {
+        return originatingTrxAmount;
+    }
+
+    public String getFilename() {
+        return filename;
+    }
+
+    public Date getUploadDate() {
+        return uploadDate;
+    }
 }
