@@ -1,7 +1,7 @@
 package com.ideas.fin.data.repository;
 
-/**
- * Created by idnsuc on 12/6/2017.
- */
-public class SaleForceRepository {
+import com.ideas.fin.data.entity.SaleforceReport;
+import org.springframework.data.repository.CrudRepository;
+
+public interface SaleForceRepository extends CrudRepository<SaleforceReport, Long> {
 }

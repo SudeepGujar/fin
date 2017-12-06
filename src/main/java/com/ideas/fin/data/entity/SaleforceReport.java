@@ -36,6 +36,10 @@ public class SaleforceReport {
         this.partnerName = partnerName;
     }
 
+    public String getPartnerName() {
+        return partnerName;
+    }
+
     public static class BusinessModel {
         private final double firstYear;
         private final double secondYear;
