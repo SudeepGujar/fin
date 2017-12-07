@@ -28,4 +28,8 @@ public class CashReceiptService {
                 .map(objects -> new CashReceipts(objects.get(0).toString(), objects.get(1).toString(), objects.get(2).toString(), objects.get(3).toString(), (Date) objects.get(4), objects.get(5).toString(), (Double) objects.get(6), (Double) objects.get(7), name, uploadDate))
                 .collect(Collectors.toList());
     }
+
+    public CashReceipts getRecieptOfCustomerForType(String opportunityName, String accountNumber, String documentType) {
+        return  cashReceiptRepository.findByCustomerNumberAndCustomerNameAndDocumentType(accountNumber,opportunityName,documentType);
+    }
 }
