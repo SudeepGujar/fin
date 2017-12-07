@@ -37,13 +37,19 @@ public class MainService {
                    Date invoiceDate = invoice.getDocumentDate();
                    int year = getYearsBetweenDates(accessDate,invoiceDate);
                    double commissionFactor = getCommisionFactor(year,v.getBusinessModel());
+                   double clientinvoiceAmount = invoice.getOriginatingTrxAmount()!=null?payments.getOriginatingTrxAmount():payments.getTrxAmount();
+                   double fullCommissionAmount = clientinvoiceAmount*commissionFactor/100;
+
                    double paymentAmount = payments.getOriginatingTrxAmount()!=null?payments.getOriginatingTrxAmount():payments.getTrxAmount();
-                   double liableAmount = paymentAmount*commissionFactor;
+                   double liableAmount = paymentAmount*commissionFactor/100;
+                   Liability liability = new Liability(v.getAccountNumber(),v.getOpportunityName(),commissionFactor,invoice.getDocumentNumber(),
+                           invoiceDate,clientinvoiceAmount,fullCommissionAmount,payments.getDocumentDate(),paymentAmount,liableAmount);
+                   liabilities.add(liability);
                }
 
            });
         });
-        return null;
+        return liabilities;
     }
 
     private double getCommisionFactor(int year, SaleforceReport.BusinessModel businessModel) {
