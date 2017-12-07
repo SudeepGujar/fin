@@ -5,6 +5,9 @@ import com.ideas.fin.data.repository.SaleForceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,8 +29,25 @@ public class SaleForceReportService {
 
     private List<SaleforceReport> getCashReceipts(List<List<Object>> saleforceReportRaw, String name, Date uploadDate) {
         return saleforceReportRaw.stream()
-                .map(objects -> new SaleforceReport(objects.get(0).toString(), objects.get(1).toString(), objects.get(2).toString(), (Date) objects.get(3),objects.get(4).toString(), objects.get(5).toString(), (Date)objects.get(6), objects.get(7).toString(), objects.get(8).toString(), objects.get(9).toString(),name, uploadDate))
+                .map(objects -> {
+                    System.out.println(objects);
+                    return new SaleforceReport(String.valueOf(objects.get(0)), String.valueOf(objects.get(1)), String.valueOf(objects.get(2)), getDate(objects.get(3)),String.valueOf(objects.get(4)), String.valueOf(objects.get(5)), getDate(objects.get(6)), String.valueOf(objects.get(7)), String.valueOf(objects.get(8)), String.valueOf(objects.get(9)),name, uploadDate);
+                })
                 .collect(Collectors.toList());
+    }
+
+    private Date getDate(Object o){
+        if(o==null){
+            return null;
+        }
+        if(o.getClass().equals(Date.class)){
+            return (Date) o;
+        }
+        if(o.getClass().equals(String.class)){
+            final DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("d/M/yyyy");
+            return Date.from(LocalDate.parse(o.toString(), formatter).atStartOfDay().toInstant(ZoneOffset.UTC));
+        }
+        return null;
     }
 
     public List<SaleforceReport> getAllPartners() {

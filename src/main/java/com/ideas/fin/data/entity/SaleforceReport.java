@@ -50,10 +50,6 @@ public class SaleforceReport {
          this(null,accountName, accountNumber, opportunityName, closeDate, partnerType, businessModel, accessDate, drivingProduct, deliveryFrameworkName, partnerName, filename, uploadDate);
     }
 
-    public long getId() {
-        return id;
-    }
-
     public String getAccountName() {
         return accountName;
     }
