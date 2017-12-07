@@ -31,4 +31,13 @@ public class BusinessModelTest {
         Assert.assertEquals(30, businessModel.getOngoing(), 0);
         Assert.assertEquals(0, businessModel.getConsulting(), 0);
     }
+
+    @Test
+    public void shouldGetEmptyModel(){
+        final BusinessModel businessModel = new BusinessModel("null");
+        Assert.assertEquals(0, businessModel.getFirstYear(), 0);
+        Assert.assertEquals(0, businessModel.getSecondYear(), 0);
+        Assert.assertEquals(0, businessModel.getOngoing(), 0);
+        Assert.assertEquals(0, businessModel.getConsulting(), 0);
+    }
 }

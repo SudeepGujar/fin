@@ -116,7 +116,7 @@ public class SaleforceReport {
         public BusinessModel(String businessModel) {
             final List<String> modelSplits = Arrays.asList(businessModel.replaceAll("[^0-9]", " ").trim().replaceAll(" +", " ").split(" "));
             final List<Double> model = Arrays.asList(0D, 0D, 0D, 0D);
-            for (int i = 0; i < modelSplits.size(); i++) {
+            for (int i = 0; i < modelSplits.size() && !modelSplits.get(i).isEmpty(); i++) {
                 model.set(i,Double.parseDouble(modelSplits.get(i)));
             }
 
