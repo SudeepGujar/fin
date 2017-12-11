@@ -29,6 +29,10 @@ public class SaleforceReport {
     private final String filename;
     private final Date uploadDate;
 
+    public SaleforceReport() {
+        this(null, null, null, null, null, null, null, null, null, null, null, null);
+    }
+
     @PersistenceConstructor
     public SaleforceReport(Long id, String accountName, String accountNumber, String opportunityName, Date closeDate, String partnerType, String businessModel, Date accessDate, String drivingProduct, String deliveryFrameworkName, String partnerName, String filename, Date uploadDate) {
         this.id = id;
@@ -74,6 +78,10 @@ public class SaleforceReport {
         return new BusinessModel(businessModel);
     }
 
+    public String getBusinessModelAsString(){
+        return businessModel;
+    }
+
     public Date getAccessDate() {
         return accessDate;
     }
@@ -104,6 +112,10 @@ public class SaleforceReport {
         private final double secondYear;
         private final double ongoing;
         private final double consulting;
+
+        public BusinessModel() {
+            this(0D, 0D, 0D, 0D);
+        }
 
         @PersistenceConstructor
         public BusinessModel(double firstYear, double secondYear, double ongoing, double consulting) {

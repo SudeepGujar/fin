@@ -30,6 +30,16 @@ public class CashReceiptService {
     }
 
     public CashReceipts getRecieptOfCustomerForType(String opportunityName, String accountNumber, String documentType) {
-        return  cashReceiptRepository.findByCustomerNumberAndCustomerNameAndDocumentType(accountNumber,opportunityName,documentType);
+        final List<CashReceipts> cashReceipts = cashReceiptRepository.findByCustomerNumberAndCustomerNameAndDocumentType(accountNumber, opportunityName, documentType);
+        if (cashReceipts == null || cashReceipts.isEmpty()){
+            return null;
+        }
+        final Double trxAmount = cashReceipts.stream().mapToDouble(CashReceipts::getTrxAmount).sum();
+        final Double originatingTrxAmount = cashReceipts.stream().mapToDouble(CashReceipts::getOriginatingTrxAmount).sum();
+        final String documentNumbers = cashReceipts.stream().map(CashReceipts::getDocumentNumber).collect(Collectors.joining(" And "));
+        final CashReceipts firstValue = cashReceipts.get(0);
+        return new CashReceipts(firstValue.getCustomerNumber(), firstValue.getCustomerName(), documentNumbers, firstValue.getDocumentType()
+                , firstValue.getDocumentDate(), firstValue.getCurrencyID(), trxAmount, originatingTrxAmount, firstValue.getFilename(), firstValue.getUploadDate());
+
     }
 }

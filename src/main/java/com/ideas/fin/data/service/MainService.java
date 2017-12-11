@@ -28,42 +28,51 @@ public class MainService {
         List<Liability> liabilities = new ArrayList<>();
         List<SaleforceReport> saleforceReports = saleForceReportService.getAllPartners();
         Map<String, List<SaleforceReport>> saleforceReportsByName = saleforceReports.stream().collect(Collectors.groupingBy(r -> r.getPartnerName()));
-        saleforceReportsByName.entrySet().forEach(entry ->{
-           entry.getValue().forEach(v->{
-               CashReceipts invoice = cashReceiptService.getRecieptOfCustomerForType(v.getOpportunityName(),v.getAccountNumber(),"Sales / Invoices");
-               CashReceipts payments = cashReceiptService.getRecieptOfCustomerForType(v.getOpportunityName(),v.getAccountNumber(),"Payments");
-               if(invoice!=null && payments!=null){
-                   Date accessDate = v.getAccessDate();
-                   Date invoiceDate = invoice.getDocumentDate();
-                   int year = getYearsBetweenDates(accessDate,invoiceDate);
-                   double commissionFactor = getCommisionFactor(year,v.getBusinessModel());
-                   double clientinvoiceAmount = invoice.getOriginatingTrxAmount()!=null?payments.getOriginatingTrxAmount():payments.getTrxAmount();
-                   double fullCommissionAmount = clientinvoiceAmount*commissionFactor/100;
+        saleforceReportsByName.entrySet().forEach(entry -> {
+            entry.getValue().forEach(v -> {
+                CashReceipts invoice = cashReceiptService.getRecieptOfCustomerForType(v.getAccountName(), v.getAccountNumber(), "Sales / Invoices");
+                CashReceipts payments = cashReceiptService.getRecieptOfCustomerForType(v.getAccountName(), v.getAccountNumber(), "Payments");
+                if (invoice != null) {
+                    Date accessDate = v.getAccessDate();
+                    Date invoiceDate = invoice.getDocumentDate();
+                    int year = getYearsBetweenDates(accessDate, invoiceDate);
+                    double commissionFactor = getCommisionFactor(year, v.getBusinessModel());
+                    double clientinvoiceAmount = !invoice.getOriginatingTrxAmount().equals(0D) ? invoice.getOriginatingTrxAmount() : invoice.getTrxAmount();
+                    double fullCommissionAmount = clientinvoiceAmount * commissionFactor / 100;
+                    double paymentAmount = 0;
+                    double liableAmount = 0;
+                    Date documentDate = null;
+                    if (payments != null) {
+                        paymentAmount = !payments.getOriginatingTrxAmount().equals(0D) ? payments.getOriginatingTrxAmount() : payments.getTrxAmount();
+                        liableAmount = paymentAmount * commissionFactor / 100;
 
-                   double paymentAmount = payments.getOriginatingTrxAmount()!=null?payments.getOriginatingTrxAmount():payments.getTrxAmount();
-                   double liableAmount = paymentAmount*commissionFactor/100;
-                   Liability liability = new Liability(v.getAccountNumber(),v.getOpportunityName(),commissionFactor,invoice.getDocumentNumber(),
-                           invoiceDate,clientinvoiceAmount,fullCommissionAmount,payments.getDocumentDate(),paymentAmount,liableAmount);
-                   liabilities.add(liability);
-               }
+                        documentDate = payments.getDocumentDate();
+                    }
+                    Liability liability = new Liability(v.getAccountNumber(), v.getAccountName(), v.getBusinessModelAsString(),year,commissionFactor, invoice.getDocumentNumber(),
+                            invoiceDate, clientinvoiceAmount, fullCommissionAmount, documentDate, paymentAmount, liableAmount, v.getPartnerName());
+                    liabilities.add(liability);
+                }
 
-           });
+            });
         });
         return liabilities;
     }
 
     private double getCommisionFactor(int year, SaleforceReport.BusinessModel businessModel) {
         TreeMap<Integer, Double> businessModelMap = new TreeMap<>();
-        businessModelMap.put(1,businessModel.getFirstYear());
-        businessModelMap.put(2,businessModel.getSecondYear());
-        businessModelMap.put(3,businessModel.getOngoing());
-        businessModelMap.put(0,businessModel.getConsulting());
+        businessModelMap.put(1, businessModel.getFirstYear());
+        businessModelMap.put(2, businessModel.getSecondYear());
+        businessModelMap.put(3, businessModel.getOngoing());
+        businessModelMap.put(0, businessModel.getConsulting());
         return businessModelMap.floorEntry(year).getValue();
     }
 
     public int getYearsBetweenDates(Date start, Date end) {
+        if (start == null) {
+            return 0;
+        }
         if (start.before(end)) {
-            return ((Long) ((ChronoUnit.DAYS.between(getLocalDateFromDate(start), getLocalDateFromDate(end)) + 1L) / 365L)).intValue()+1;
+            return ((Long) ((ChronoUnit.DAYS.between(getLocalDateFromDate(start), getLocalDateFromDate(end)) + 1L) / 365L)).intValue() + 1;
         }
         return 0;
     }

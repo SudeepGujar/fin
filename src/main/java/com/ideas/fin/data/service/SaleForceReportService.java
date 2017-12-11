@@ -11,6 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class SaleForceReportService {
@@ -29,28 +30,27 @@ public class SaleForceReportService {
 
     private List<SaleforceReport> getCashReceipts(List<List<Object>> saleforceReportRaw, String name, Date uploadDate) {
         return saleforceReportRaw.stream()
-                .map(objects -> {
-                    System.out.println(objects);
-                    return new SaleforceReport(String.valueOf(objects.get(0)), String.valueOf(objects.get(1)), String.valueOf(objects.get(2)), getDate(objects.get(3)),String.valueOf(objects.get(4)), String.valueOf(objects.get(5)), getDate(objects.get(6)), String.valueOf(objects.get(7)), String.valueOf(objects.get(8)), String.valueOf(objects.get(9)),name, uploadDate);
-                })
+                .map(objects -> new SaleforceReport(String.valueOf(objects.get(0)), String.valueOf(objects.get(1)), String.valueOf(objects.get(2)), getDate(objects.get(3)), String.valueOf(objects.get(4)), String.valueOf(objects.get(5)), getDate(objects.get(6)), String.valueOf(objects.get(7)), String.valueOf(objects.get(8)), String.valueOf(objects.get(9)), name, uploadDate))
                 .collect(Collectors.toList());
     }
 
-    private Date getDate(Object o){
-        if(o==null){
+    private Date getDate(Object o) {
+        if (o == null) {
             return null;
         }
-        if(o.getClass().equals(Date.class)){
+        if (o.getClass().equals(Date.class)) {
             return (Date) o;
         }
-        if(o.getClass().equals(String.class)){
-            final DateTimeFormatter formatter =  DateTimeFormatter.ofPattern("d/M/yyyy");
+        if (o.getClass().equals(String.class)) {
+            final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
             return Date.from(LocalDate.parse(o.toString(), formatter).atStartOfDay().toInstant(ZoneOffset.UTC));
         }
         return null;
     }
 
     public List<SaleforceReport> getAllPartners() {
-        return (List<SaleforceReport>) saleForceRepository.findAll();
+        return StreamSupport.stream(saleForceRepository.findAll().spliterator(), false)
+                .collect(Collectors.groupingBy(SaleforceReport::getAccountNumber))
+                .entrySet().stream().map(entry -> entry.getValue().get(0)).collect(Collectors.toList());
     }
 }

@@ -26,6 +26,10 @@ public class CashReceipts {
     private final String filename;
     private final Date uploadDate;
 
+    public CashReceipts() {
+        this(null, null, null, null, null, null, null, null, null, null);
+    }
+
     @PersistenceConstructor
     public CashReceipts(Long id, String customerNumber, String customerName, String documentNumber, String documentType, Date documentDate, String currencyID, Double trxAmount, Double originatingTrxAmount, String filename, Date uploadDate) {
         this.id = id;
